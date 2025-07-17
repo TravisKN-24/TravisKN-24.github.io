@@ -1,31 +1,36 @@
-# Trivia Game
+# Trivia Titan
 
-Welcome to the **Trivia Game**! 🎮
+Welcome to **Trivia Titan**! 🎮
 
-This is a fun and engaging game where you have **15 questions** to answer correctly. The questions are a mix of **easy**, **hard**, and **extremely hard** questions, so get ready for a challenge! 
+Test your knowledge in this modern, fast-paced trivia game. Enjoy a sleek, responsive interface, dynamic questions from the OpenTDB API, and immersive sound effects. Play on any device—laptop, tablet, or mobile phone!
 
 ## How to Play
 
-1. **Answer the Questions**: Each question comes with 4 options. Pick the correct answer, and you'll move on to the next question.
-2. **Test Your Knowledge**: Questions get harder as you progress, so keep track of how many you can get right.
-3. **Challenge Yourself**: Try to answer all 15 questions without making any mistakes! The ultimate goal is to get them all right.
+1. **Choose a Difficulty**: Select Easy, Medium, or Hard from the menu.
+2. **Answer 15 Questions**: Each question has 4 options. Pick the correct answer before time runs out!
+3. **Score Points**: Earn 10 points for each correct answer. Try to get all 15 right for the ultimate win!
+4. **Settings**: Adjust master and SFX volume anytime from the Settings menu.
 
 ## Features
 
-- **Mix of Easy, Hard, and Extremely Hard Questions**
-- **Simple and Fun Interface**
-- **Track Your Performance**
+- **Live Questions from OpenTDB API**
+- **Modern, Responsive UI** (works on laptop, tablet, and mobile)
+- **Typewriter Animated Heading**
+- **Settings Modal with Volume Sliders**
+- **Background Music & Sound Effects**
+- **Confetti Animation for Wins**
+- **Quick Difficulty Switching & Restart**
 
 ## Technologies Used
 
-- **HTML** for structuring the game
-- **CSS** for styling
-- **JavaScript** for game logic and interactivity
+- **HTML5** (structure)
+- **CSS3** (modern, responsive styling)
+- **JavaScript (ES6+)** (game logic, UI, API)
+- **Howler.js** (audio)
+- **OpenTDB API** (trivia questions)
 
+## How to Run the Game
 
-### Explanation of Sections:
-- **How to Play**: Simple instructions for anyone to understand how to play the game.
-- **Features**: Describes the core features of the game, such as the mix of question difficulties.
-- **Technologies Used**: This section lists what technologies were used to build the game (you can modify this if you use anything different).
-- **How to Run the Game**: Provides the user with instructions on how to clone and run the game on their machine.
-- **License**: Just a placeholder for an MIT License; you can change or add your own license information.
+1. **Clone or Download** this repository.
+2. Open `index.html` in your web browser (no server required).
+3. Play instantly on desktop or mobile!

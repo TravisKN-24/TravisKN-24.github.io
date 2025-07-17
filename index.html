@@ -4,8 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trivia Titan</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
         body {
             font-family: 'Arial', sans-serif;
             background: linear-gradient(135deg, #1e3c72, #2a5298);
@@ -14,6 +20,7 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            height: 100%;
             margin: 0;
             padding-top: 50px;
             overflow: auto;
@@ -23,13 +30,24 @@
             margin-bottom: 20px;
             text-align: center;
             width: 100%;
+            font-family: 'Roboto', Arial, sans-serif;
+            white-space: pre;
+            overflow: hidden;
+            border-right: .15em solid #fff;
+            box-sizing: border-box;
         }
-        .letter {
+        .typewriter-cursor {
             display: inline-block;
-            animation: bounceLetter 1.5s infinite;
+            width: 0.15em;
+            background: #fff;
+            animation: blink-cursor 0.7s steps(1) infinite;
+            vertical-align: bottom;
+            height: 1em;
         }
-        .letter:nth-child(odd) { animation-direction: normal; }
-        .letter:nth-child(even) { animation-direction: reverse; }
+        @keyframes blink-cursor {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
         #container {
             background: rgba(255, 255, 255, 0.1);
             padding: 30px;
@@ -43,12 +61,36 @@
             flex-direction: column;
             align-items: center;
         }
+        .vertical-btns {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            align-items: center;
+            width: 100%;
+            font-family: 'Roboto', Arial, sans-serif;
+        }
+        .big-btn {
+            font-size: 1.5em;
+            padding: 20px 0;
+            width: 95%;
+            box-sizing: border-box;
+            font-family: 'Roboto', Arial, sans-serif;
+        }
+        .big-btn.settings-btn {
+            padding-left: 32px;
+            padding-right: 32px;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            white-space: normal;
+            font-family: 'Roboto', Arial, sans-serif;
+        }
         input, button {
             padding: 12px;
             margin: 10px 0;
             border: none;
             border-radius: 8px;
             font-size: 1.1em;
+            font-family: 'Roboto', Arial, sans-serif;
         }
         input {
             width: 70%;
@@ -78,6 +120,10 @@
         }
         #question-container p {
             font-size: 1.3em;
+        }
+        /* Keep default font for questions and answers */
+        #question-container, #question-container h3, #question-container p, #question-container .option {
+            font-family: 'Arial', sans-serif;
         }
         .option {
             display: block;
@@ -134,9 +180,12 @@
         .page-btn.active {
             background: #00c4cc;
         }
-        footer{
-            position: fixed;
-            bottom: 0;
+        footer {
+            width: 100%;
+            text-align: center;
+            background: rgba(0,0,0,0.1);
+            padding: 10px 0;
+            margin-top: auto;
         }
         @keyframes bounceLetter {
             0%, 100% { transform: translateY(0); }
@@ -153,15 +202,88 @@
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
         }
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            #container {
+                max-width: 90vw;
+                padding: 20px;
+            }
+            #heading {
+                font-size: 2.5em;
+            }
+            .big-btn, .big-btn.settings-btn {
+                font-size: 1.2em;
+                padding: 16px 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-top: 20px;
+            }
+            #container {
+                padding: 14px;
+                max-width: 98vw;
+            }
+            #heading {
+                font-size: 2em;
+                padding: 0 8px;
+            }
+            .big-btn, .big-btn.settings-btn {
+                font-size: 1em;
+                padding: 12px 0;
+            }
+            #question-container {
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #container {
+                padding: 6px;
+                border-radius: 0;
+                min-width: unset;
+            }
+            #heading {
+                font-size: 1.2em;
+                padding: 0 2px;
+            }
+            .big-btn, .big-btn.settings-btn {
+                font-size: 0.95em;
+                padding: 8px 0;
+                width: 100%;
+            }
+            #question-container {
+                padding: 4px;
+            }
+            .option {
+                font-size: 1em;
+                padding: 12px;
+            }
+            #settings-modal > div {
+                min-width: 90vw !important;
+                padding: 16px 4px 12px 4px !important;
+            }
+        }
     </style>
 </head>
 <body>
     <div id="heading"></div>
     <div id="container">
-        <div id="start-screen">
-            <input type="text" id="username" placeholder="Enter your username" required>
-            <br>
-            <button onclick="startGame()">Start</button>
+        <div id="main-menu">
+            <div class="vertical-btns">
+                <button class="big-btn" onclick="showPlayMenu()">Play</button>
+                <button class="big-btn settings-btn" onclick="showSettings()">Settings</button>
+            </div>
+        </div>
+        <div id="difficulty-menu" style="display:none;">
+            <h2>Select Difficulty</h2>
+            <div class="vertical-btns">
+                <button class="big-btn" onclick="startGame('easy')">Easy</button>
+                <button class="big-btn" onclick="startGame('medium')">Medium</button>
+                <button class="big-btn" onclick="startGame('hard')">Hard</button>
+                <button class="big-btn" style="background:#555;" onclick="showMainMenu()">Back</button>
+            </div>
         </div>
         <div id="game-screen" style="display: none;">
             <div id="question-container"></div>
@@ -169,17 +291,28 @@
         </div>
         <div id="end-screen" style="display: none;">
             <h2 id="result"></h2>
-            <button onclick="restartGame()">Restart</button>
-            <button onclick="showLeaderboardScreen()">Leaderboard</button>
-        </div>
-        <div id="leaderboard-screen" style="display: none;">
-            <div id="leaderboard"></div>
-            <div id="pagination"></div>
-            <button onclick="restartGame()">Restart</button>
+            <div id="end-buttons"></div>
         </div>
     </div>
 
-    <footer class="footer">
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(30,44,72,0.85);z-index:10000;align-items:center;justify-content:center;">
+        <div style="background:#fff;color:#222;padding:36px 32px 28px 32px;border-radius:18px;min-width:320px;box-shadow:0 8px 32px rgba(0,0,0,0.25);display:flex;flex-direction:column;align-items:center;gap:32px;max-width:90vw;">
+            <h2 style="font-family:'Roboto',Arial,sans-serif;margin-top:0;margin-bottom:18px;">Settings</h2>
+            <div style="width:100%;">
+                <label for="master-volume" style="font-family:'Roboto',Arial,sans-serif;font-size:1.1em;">Master Volume: <span id="master-volume-value">100</span></label>
+                <input id="master-volume" type="range" min="0" max="100" value="100" style="width:100%;margin-top:8px;" oninput="updateMasterVolume(this.value)">
+            </div>
+            <div style="width:100%;">
+                <label for="sfx-volume" style="font-family:'Roboto',Arial,sans-serif;font-size:1.1em;">SFX Volume: <span id="sfx-volume-value">100</span></label>
+                <input id="sfx-volume" type="range" min="0" max="100" value="100" style="width:100%;margin-top:8px;" oninput="updateSfxVolume(this.value)">
+            </div>
+            <button onclick="closeSettings()" style="margin-top:10px;width:100%;font-size:1.1em;">Close</button>
+        </div>
+    </div>
+
+    <footer>
         <p>© 2025 Travis. All Rights Reserved.</p>
     </footer>
 
@@ -190,10 +323,8 @@
         let timer;
         let timeLeft;
         let startTime;
-        let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
         let currentQuestions = [];
-        let currentPage = 1; // Track the current page
-        const usersPerPage = 20; // Number of users per page
+        let currentDifficulty = '';
 
         // Audio setup with Howler.js
         const backgroundMusic = new Howl({
@@ -210,403 +341,6 @@
             volume: 0.5
         });
 
-        const allQuestions = {
-            easy: [
-                { q: "What is the largest planet in our solar system?", o: ["Earth", "Mars", "Jupiter", "Saturn"], a: 2 },
-                { q: "Which fruit is known for being yellow and curved?", o: ["Apple", "Banana", "Orange", "Grape"], a: 1 },
-                { q: "How many legs does a spider typically have?", o: ["6", "8", "10", "12"], a: 1 },
-                { q: "What is the primary source of energy for Earth?", o: ["Moon", "Sun", "Wind", "Water"], a: 1 },
-                { q: "Which animal is known as man’s best friend?", o: ["Cat", "Dog", "Bird", "Fish"], a: 1 },
-                { q: "What color are emeralds?", o: ["Red", "Blue", "Green", "Yellow"], a: 2 },
-                { q: "How many months are in a year?", o: ["10", "11", "12", "13"], a: 2 },
-                { q: "What do bees produce?", o: ["Milk", "Honey", "Wax", "Silk"], a: 1 },
-                { q: "Which season comes after summer?", o: ["Spring", "Autumn", "Winter", "Summer"], a: 1 },
-                { q: "What is the main ingredient in guacamole?", o: ["Tomato", "Avocado", "Onion", "Pepper"], a: 1 },
-                { q: "What shape is a stop sign?", o: ["Hexagon", "Octagon", "Circle", "Square"], a: 1 },
-                { q: "What does H2O stand for?", o: ["Salt", "Oxygen", "Water", "Helium"], a: 2 },
-                { q: "How many colors are there in a rainbow?", o: ["5", "6", "7", "8"], a: 2 },
-                { q: "Which bird is known for mimicking human speech?", o: ["Parrot", "Eagle", "Sparrow", "Owl"], a: 0 },
-                { q: "What do you use to write on a blackboard?", o: ["Pencil", "Pen", "Chalk", "Marker"], a: 2 },
-                { q: "How many sides does a triangle have?", o: ["2", "3", "4", "5"], a: 1 },
-                { q: "What is the freezing point of water?", o: ["0°C", "100°C", "32°C", "10°C"], a: 0 },
-                { q: "What sound does a cow make?", o: ["Bark", "Meow", "Moo", "Quack"], a: 2 },
-                { q: "What color is the sky on a clear day?", o: ["Red", "Blue", "Green", "Yellow"], a: 1 },
-                { q: "What day comes after Friday?", o: ["Sunday", "Monday", "Saturday", "Thursday"], a: 2 },
-                { q: "Which ocean is the largest?", o: ["Atlantic", "Pacific", "Indian", "Arctic"], a: 1 },
-                { q: "Which animal lives in a shell?", o: ["Cat", "Turtle", "Dog", "Lion"], a: 1 },
-                { q: "What color is associated with danger or stop?", o: ["Green", "Red", "Yellow", "Blue"], a: 1 },
-                { q: "How many wheels does a bicycle have?", o: ["1", "2", "3", "4"], a: 1 },
-                { q: "Which insect has colorful wings?", o: ["Ant", "Butterfly", "Bee", "Fly"], a: 1 },
-                { q: "Which sense is associated with the nose?", o: ["Taste", "Touch", "Smell", "Sight"], a: 2 },
-                { q: "What do you call frozen water?", o: ["Steam", "Fog", "Ice", "Snow"], a: 2 },
-                { q: "How many fingers do humans have?", o: ["8", "10", "12", "5"], a: 1 },
-                { q: "What do you use to eat soup?", o: ["Fork", "Spoon", "Knife", "Hands"], a: 1 },
-                { q: "What planet do we live on?", o: ["Mars", "Venus", "Earth", "Jupiter"], a: 2 },
-                { q: "What color is the sky on a clear day?", o: ["Green", "Blue", "Red", "Yellow"], a: 1 },
-                { q: "How many sides does a triangle have?", o: ["Two", "Three", "Four", "Five"], a: 1 },
-                { q: "Which animal says 'meow'?", o: ["Dog", "Cow", "Cat", "Duck"], a: 2 },
-                { q: "How many days are in a week?", o: ["5", "6", "7", "8"], a: 2 },
-                { q: "Which shape has four equal sides?", o: ["Triangle", "Rectangle", "Square", "Circle"], a: 2 },
-                { q: "Which planet do we live on?", o: ["Mars", "Earth", "Venus", "Jupiter"], a: 1 },
-                { q: "What color are bananas when ripe?", o: ["Green", "Red", "Yellow", "Blue"], a: 2 },
-                { q: "What do we use to write on a blackboard?", o: ["Pen", "Pencil", "Chalk", "Marker"], a: 2 },
-                { q: "What is H2O more commonly known as?", o: ["Salt", "Oxygen", "Water", "Ice"], a: 2 },
-                { q: "How many fingers do most humans have?", o: ["8", "9", "10", "11"], a: 2 },
-                { q: "What color are strawberries?", o: ["Blue", "Red", "Green", "Purple"], a: 1 },
-                { q: "What do cows drink?", o: ["Milk", "Water", "Juice", "Tea"], a: 1 },
-                { q: "Which month comes after April?", o: ["May", "June", "July", "March"], a: 0 },
-                { q: "What is the first letter of the alphabet?", o: ["C", "B", "A", "D"], a: 2 },
-                { q: "What is 2 + 2?", o: ["3", "4", "5", "6"], a: 1 },
-                { q: "Which animal is known as the king of the jungle?", o: ["Tiger", "Lion", "Elephant", "Cheetah"], a: 1 },
-                { q: "What do you call the baby of a dog?", o: ["Cub", "Puppy", "Kitten", "Foal"], a: 1 },
-                { q: "What is the opposite of 'up'?", o: ["Down", "Left", "Side", "High"], a: 0 },
-                { q: "What do bees make?", o: ["Wax", "Honey", "Nectar", "Sugar"], a: 1 },
-                { q: "What do you wear on your feet?", o: ["Gloves", "Hats", "Shoes", "Socks"], a: 2 },
-                { q: "Which day comes after Friday?", o: ["Sunday", "Monday", "Saturday", "Tuesday"], a: 2 },
-                { q: "What color are clouds?", o: ["Black", "White", "Blue", "Yellow"], a: 1 },
-                { q: "What is a baby cat called?", o: ["Puppy", "Foal", "Cub", "Kitten"], a: 3 },
-                { q: "Which fruit is red and has seeds on the outside?", o: ["Banana", "Apple", "Strawberry", "Grape"], a: 2 },
-                { q: "How many wheels does a bicycle have?", o: ["1", "2", "3", "4"], a: 1 },
-                { q: "What is the opposite of cold?", o: ["Hot", "Wet", "Dry", "Cool"], a: 0 },
-                { q: "What is 5 - 3?", o: ["1", "2", "3", "4"], a: 1 },
-                { q: "What do birds use to fly?", o: ["Legs", "Arms", "Wings", "Tails"], a: 2 },
-                { q: "What do you put in a toaster?", o: ["Bread", "Butter", "Cheese", "Eggs"], a: 0 },
-                { q: "Which color do you get when you mix red and yellow?", o: ["Green", "Orange", "Purple", "Pink"], a: 1 },
-                { q: "What do you wear on your head?", o: ["Gloves", "Hat", "Shoes", "Belt"], a: 1 },
-                { q: "How many legs does a dog have?", o: ["2", "3", "4", "5"], a: 2 },
-                { q: "What is frozen water called?", o: ["Steam", "Rain", "Snow", "Ice"], a: 3 },
-                { q: "Which animal goes 'woof'?", o: ["Cat", "Dog", "Bird", "Cow"], a: 1 },
-                { q: "Which shape is round?", o: ["Square", "Triangle", "Circle", "Rectangle"], a: 2 },
-                { q: "What do you drink when you're thirsty?", o: ["Water", "Paper", "Sand", "Juice"], a: 0 },
-                { q: "How many letters are in the English alphabet?", o: ["24", "25", "26", "27"], a: 2 },
-                { q: "What does a red traffic light mean?", o: ["Go", "Slow", "Stop", "Run"], a: 2 },
-                { q: "Which fruit is green on the outside and red on the inside?", o: ["Apple", "Watermelon", "Pear", "Grape"], a: 1 },
-                { q: "What is the color of grass?", o: ["Red", "Blue", "Green", "Yellow"], a: 2 },
-                { q: "How many arms does a starfish have?", o: ["3", "5", "7", "9"], a: 1 },
-                { q: "What animal lives in a web?", o: ["Bee", "Spider", "Ant", "Fly"], a: 1 },
-                { q: "What’s the smallest number?", o: ["1", "0", "-1", "2"], a: 1 },
-                { q: "What animal has a trunk?", o: ["Lion", "Giraffe", "Elephant", "Rhino"], a: 2 },
-                { q: "Which month starts the year?", o: ["March", "January", "April", "December"], a: 1 },
-                { q: "What shape is a ball?", o: ["Cube", "Pyramid", "Sphere", "Cone"], a: 2 },
-                { q: "How many eyes do humans have?", o: ["1", "2", "3", "4"], a: 1 },
-                { q: "What do you use to cut paper?", o: ["Knife", "Scissors", "Fork", "Pen"], a: 1 },
-                { q: "What grows in a garden?", o: ["Books", "Flowers", "Cars", "Chairs"], a: 1 },
-                { q: "Where do fish live?", o: ["Sky", "Ground", "Water", "Trees"], a: 2 },
-                { q: "What’s the opposite of big?", o: ["Large", "Huge", "Small", "Tall"], a: 2 },
-                { q: "What is the main ingredient in an omelette?", o: ["Flour", "Milk", "Eggs", "Sugar"], a: 2 },
-                { q: "What do you use to brush your teeth?", o: ["Toothbrush", "Comb", "Fork", "Spoon"], a: 0 },
-                { q: "Which season comes after summer?", o: ["Winter", "Spring", "Autumn", "Rainy"], a: 2 },
-                { q: "How many wheels on a car?", o: ["2", "3", "4", "5"], a: 2 },
-                { q: "What animal is black and white and eats bamboo?", o: ["Zebra", "Panda", "Cow", "Koala"], a: 1 },
-                { q: "What fruit keeps the doctor away if eaten daily?", o: ["Banana", "Grape", "Apple", "Orange"], a: 2 },
-                { q: "Which of these is a color?", o: ["Tree", "Red", "Spoon", "Chair"], a: 1 },
-                { q: "What part of your body do you see with?", o: ["Mouth", "Feet", "Eyes", "Hands"], a: 2 },
-                { q: "How many toes do most people have?", o: ["8", "10", "12", "5"], a: 1 },
-                { q: "What do you ride to go to school?", o: ["Chair", "Bus", "TV", "Fan"], a: 1 },
-                { q: "What do you open to enter a room?", o: ["Window", "Wall", "Door", "Roof"], a: 2 },
-                { q: "Which of these animals can fly?", o: ["Elephant", "Giraffe", "Bird", "Dog"], a: 2 },
-                { q: "What is the capital letter of 'b'?", o: ["B", "b", "C", "A"], a: 0 },
-                { q: "How many ears do humans have?", o: ["1", "2", "3", "4"], a: 1 },
-                { q: "Which of these is a fruit?", o: ["Carrot", "Potato", "Apple", "Broccoli"], a: 2 },
-                { q: "What do you use to write?", o: ["Spoon", "Marker", "Knife", "Brush"], a: 1 },
-                { q: "What is the main color of grass?", o: ["Blue", "Yellow", "Green", "Red"], a: 2 },
-                { q: "Which animal barks?", o: ["Cat", "Fish", "Dog", "Cow"], a: 2 },
-                { q: "What do you wear to see clearly?", o: ["Helmet", "Shoes", "Glasses", "Scarf"], a: 2 },
-                { q: "What helps you hear sounds?", o: ["Eyes", "Nose", "Ears", "Mouth"], a: 2 },
-                { q: "What do you use to eat soup?", o: ["Fork", "Spoon", "Knife", "Straw"], a: 1 },
-                { q: "Which of these is cold?", o: ["Fire", "Ice", "Sun", "Oven"], a: 1 },
-                { q: "How many noses do people have?", o: ["2", "3", "1", "4"], a: 2 },
-                { q: "What do you put on your feet before shoes?", o: ["Gloves", "Socks", "Hat", "Shirt"], a: 1 },
-                { q: "What’s the color of an orange?", o: ["Red", "Orange", "Green", "Purple"], a: 1 },
-                { q: "What animal purrs and loves milk?", o: ["Dog", "Cow", "Cat", "Horse"], a: 2 },
-                { q: "How many hours in a day?", o: ["12", "24", "18", "10"], a: 1 },
-                { q: "What do you do with your mouth?", o: ["See", "Hear", "Talk", "Jump"], a: 2 },
-                { q: "What grows on your head?", o: ["Hands", "Hair", "Feet", "Eyes"], a: 1 },
-                { q: "What does a clock show?", o: ["Weather", "Time", "Sound", "Light"], a: 1 },
-                { q: "Which of these is used to drink?", o: ["Bucket", "Cup", "Plate", "Box"], a: 1 },
-                { q: "Which animal goes 'moo'?", o: ["Cat", "Cow", "Sheep", "Dog"], a: 1 },
-                { q: "What do you eat in the morning?", o: ["Lunch", "Dinner", "Breakfast", "Supper"], a: 2 },
-                { q: "What color is the sun?", o: ["Blue", "Yellow", "Green", "Black"], a: 1 },
-                { q: "What do you use to dry your body?", o: ["Soap", "Towel", "Shampoo", "Toothbrush"], a: 1 },
-                { q: "Where do you sleep?", o: ["Chair", "Table", "Bed", "Floor"], a: 2 },
-                { q: "What animal says 'quack'?", o: ["Chicken", "Duck", "Pig", "Goat"], a: 1 },
-                { q: "Which of these is a pet?", o: ["Crocodile", "Lion", "Hamster", "Shark"], a: 2 },
-                { q: "What do you eat pizza with?", o: ["Pen", "Spoon", "Hands", "Scissors"], a: 2 },
-                { q: "How many teeth do adults usually have?", o: ["20", "32", "28", "36"], a: 1 },
-                { q: "Which is used to cool a room?", o: ["Heater", "Fan", "Oven", "Lamp"], a: 1 },
-                { q: "What’s used to clean the floor?", o: ["Brush", "Spoon", "Mop", "Comb"], a: 2 },
-                { q: "What helps you smell?", o: ["Eyes", "Nose", "Ears", "Hands"], a: 1 },
-                { q: "Which of these flies?", o: ["Chair", "Plane", "Bike", "Bus"], a: 1 },
-                { q: "What is the sound a sheep makes?", o: ["Woof", "Meow", "Moo", "Baa"], a: 3 },
-                { q: "What’s the name of a baby sheep?", o: ["Puppy", "Lamb", "Kid", "Foal"], a: 1 },
-                { q: "What is the shape of a coin?", o: ["Square", "Triangle", "Round", "Rectangle"], a: 2 },
-                { q: "What do you wear to swim?", o: ["Sweater", "Swimsuit", "Jeans", "Scarf"], a: 1 },
-                { q: "What is rain made of?", o: ["Sand", "Dust", "Water", "Ice Cream"], a: 2 },
-                { q: "Where do you wash your hands?", o: ["Sink", "Cupboard", "Sofa", "Carpet"], a: 0 }
-            ],
-            hard: [
-                { q: "Who discovered penicillin?", o: ["Marie Curie", "Alexander Fleming", "Louis Pasteur", "Gregor Mendel"], a: 1 },
-                { q: "What is the longest river in the world?", o: ["Amazon", "Nile", "Yangtze", "Mississippi"], a: 1 },
-                { q: "Which gas makes up most of Earth’s atmosphere?", o: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Argon"], a: 1 },
-                { q: "What is the capital of Brazil?", o: ["Rio de Janeiro", "São Paulo", "Brasília", "Salvador"], a: 2 },
-                { q: "Who wrote 'Romeo and Juliet'?", o: ["Charles Dickens", "William Shakespeare", "Jane Austen", "Mark Twain"], a: 1 },
-                { q: "What is the largest desert by area?", o: ["Sahara", "Gobi", "Antarctic", "Kalahari"], a: 2 },
-                { q: "Which element is the most abundant in the universe?", o: ["Oxygen", "Hydrogen", "Helium", "Carbon"], a: 1 },
-                { q: "What year did the Titanic sink?", o: ["1905", "1912", "1918", "1920"], a: 1 },
-                { q: "Which organ pumps blood in the human body?", o: ["Liver", "Heart", "Lungs", "Kidneys"], a: 1 },
-                { q: "What is the chemical symbol for gold?", o: ["Au", "Ag", "Fe", "Cu"], a: 0 },
-                { q: "What language has the most native speakers?", o: ["English", "Spanish", "Hindi", "Mandarin"], a: 3 },
-                { q: "Which planet has the most moons?", o: ["Earth", "Saturn", "Jupiter", "Mars"], a: 1 },
-                { q: "Which country gifted the Statue of Liberty?", o: ["France", "Spain", "Italy", "Germany"], a: 0 },
-                { q: "How many bones are in the adult human body?", o: ["198", "206", "210", "195"], a: 1 },
-                { q: "What is the smallest country in the world?", o: ["Monaco", "Vatican City", "Liechtenstein", "San Marino"], a: 1 },
-                { q: "Who invented the light bulb?", o: ["Edison", "Tesla", "Newton", "Franklin"], a: 0 },
-                { q: "How many hearts does an octopus have?", o: ["1", "2", "3", "4"], a: 2 },
-                { q: "Which blood type is the universal donor?", o: ["A", "B", "AB", "O"], a: 3 },
-                { q: "Which famous scientist developed the theory of relativity?", o: ["Newton", "Einstein", "Galileo", "Bohr"], a: 1 },
-                { q: "Which country hosted the 2008 Summer Olympics?", o: ["Japan", "China", "Brazil", "Russia"], a: 1 },
-                { q: "What is the hardest natural substance?", o: ["Steel", "Quartz", "Diamond", "Topaz"], a: 2 },
-                { q: "Who was the first woman in space?", o: ["Sally Ride", "Mae Jemison", "Valentina Tereshkova", "Yuri Gagarin"], a: 2 },
-                { q: "Which vitamin is produced when the skin is exposed to sunlight?", o: ["A", "B", "C", "D"], a: 3 },
-                { q: "What is the main language spoken in Argentina?", o: ["Portuguese", "Spanish", "French", "Italian"], a: 1 },
-                { q: "Which is the smallest prime number?", o: ["0", "1", "2", "3"], a: 2 },
-                { q: "Which instrument measures earthquakes?", o: ["Thermometer", "Barometer", "Seismograph", "Altimeter"], a: 2 },
-                { q: "Who painted the ceiling of the Sistine Chapel?", o: ["Da Vinci", "Michelangelo", "Van Gogh", "Picasso"], a: 1 },
-                { q: "What is the capital of Canada?", o: ["Toronto", "Vancouver", "Ottawa", "Montreal"], a: 2 },
-                { q: "How many elements are on the periodic table?", o: ["112", "118", "124", "120"], a: 1 },
-                { q: "What part of the cell contains DNA?", o: ["Cytoplasm", "Nucleus", "Ribosome", "Membrane"], a: 1 },
-                { q: "Which metal is liquid at room temperature?", o: ["Iron", "Mercury", "Lead", "Zinc"], a: 1 },
-                { q: "What is the currency of South Korea?", o: ["Yen", "Won", "Baht", "Ruble"], a: 1 },
-                { q: "Who formulated the laws of motion?", o: ["Galileo", "Einstein", "Newton", "Tesla"], a: 2 },
-                { q: "Which ocean lies on the east coast of the United States?", o: ["Pacific", "Indian", "Arctic", "Atlantic"], a: 3 },
-                { q: "Which language has the most native speakers?", o: ["English", "Mandarin", "Hindi", "Spanish"], a: 1 },
-                { q: "What is the smallest prime number?", o: ["0", "1", "2", "3"], a: 2 },
-                { q: "What does DNA stand for?", o: ["Dynamic Nuclear Atom", "Deoxyribonucleic Acid", "Dioxide Nitrogen Acid", "Dual Nucleic Agent"], a: 1 },
-                { q: "Which country gifted the Statue of Liberty to the USA?", o: ["Germany", "Canada", "France", "Spain"], a: 2 },
-                { q: "Which city is famous for the Blue Mosque?", o: ["Istanbul", "Cairo", "Rome", "Dubai"], a: 0 },
-                { q: "How many hearts does an octopus have?", o: ["1", "2", "3", "4"], a: 2 },
-                { q: "Which blood type is known as the universal donor?", o: ["O+", "O-", "AB+", "B-"], a: 1 },
-                { q: "What is the hardest natural substance?", o: ["Gold", "Diamond", "Quartz", "Iron"], a: 1 },
-                { q: "Which scientist is associated with the photoelectric effect?", o: ["Max Planck", "Einstein", "Bohr", "Heisenberg"], a: 1 },
-                { q: "What is the term for animals that eat both plants and meat?", o: ["Herbivores", "Carnivores", "Omnivores", "Detritivores"], a: 2 },
-                { q: "What part of the plant conducts photosynthesis?", o: ["Roots", "Stem", "Leaves", "Flowers"], a: 2 },
-                { q: "Which European country uses the krone as currency?", o: ["Sweden", "Germany", "Poland", "France"], a: 0 },
-                { q: "What is the most abundant gas in Earth's crust?", o: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Hydrogen"], a: 0 },
-                { q: "Which famous scientist was born in Pisa, Italy?", o: ["Einstein", "Newton", "Galileo", "Hawking"], a: 2 },
-                { q: "Which famous structure can be found in Agra, India?", o: ["Great Wall", "Taj Mahal", "Colosseum", "Eiffel Tower"], a: 1 },
-                { q: "What does 'HTTP' stand for?", o: ["Hyper Trainer Text Program", "HyperText Transfer Protocol", "Hyper Transfer Text Protocol", "Home Tool Transfer Protocol"], a: 1 },
-                { q: "Which vitamin is primarily obtained from sunlight?", o: ["Vitamin A", "Vitamin C", "Vitamin D", "Vitamin K"], a: 2 },
-                { q: "What is the chemical symbol for potassium?", o: ["P", "Pt", "Po", "K"], a: 3 },
-                { q: "Which composer became deaf later in life?", o: ["Mozart", "Bach", "Chopin", "Beethoven"], a: 3 },
-                { q: "In computing, what does 'CPU' stand for?", o: ["Central Processing Unit", "Computer Personal Unit", "Central Programming Unit", "Control Processing Unit"], a: 0 },
-                { q: "What year did World War II end?", o: ["1942", "1944", "1945", "1946"], a: 2 },
-                { q: "What is the longest bone in the human body?", o: ["Tibia", "Femur", "Spine", "Humerus"], a: 1 },
-                { q: "Which country is known as the Land of the Rising Sun?", o: ["China", "Japan", "South Korea", "Thailand"], a: 1 },
-                { q: "What part of the brain controls balance?", o: ["Cerebrum", "Cerebellum", "Medulla", "Hypothalamus"], a: 1 },
-                { q: "Which river flows through Paris?", o: ["Danube", "Thames", "Rhine", "Seine"], a: 3 },
-                { q: "What instrument measures earthquakes?", o: ["Barometer", "Hygrometer", "Seismograph", "Accelerometer"], a: 2 },
-                { q: "What is the powerhouse of the cell?", o: ["Nucleus", "Mitochondria", "Ribosome", "Golgi Body"], a: 1 },
-                { q: "Which war was fought between the North and South regions in the U.S.?", o: ["Revolutionary War", "Civil War", "Cold War", "Vietnam War"], a: 1 },
-                { q: "Which scientist introduced the idea of natural selection?", o: ["Newton", "Galileo", "Darwin", "Kepler"], a: 2 },
-                { q: "How many ribs are in the human body?", o: ["24", "26", "28", "30"], a: 0 },
-                { q: "Which country has the most pyramids?", o: ["Egypt", "Mexico", "Sudan", "Peru"], a: 2 },
-                { q: "What is the SI unit of force?", o: ["Watt", "Pascal", "Newton", "Joule"], a: 2 },
-                { q: "What is the term for molten rock beneath the Earth's surface?", o: ["Lava", "Basalt", "Magma", "Obsidian"], a: 2 },
-                { q: "Which gas is used in balloons to make them float?", o: ["Hydrogen", "Helium", "Oxygen", "Nitrogen"], a: 1 },
-                { q: "What is the chemical formula for table salt?", o: ["NaCl", "KCl", "CaCO₃", "H₂SO₄"], a: 0 },
-                { q: "Which gland regulates metabolism?", o: ["Adrenal", "Thyroid", "Pituitary", "Pineal"], a: 1 },
-                { q: "What planet is known as Earth’s twin?", o: ["Mars", "Mercury", "Venus", "Neptune"], a: 2 },
-                { q: "Which bone protects the brain?", o: ["Spine", "Femur", "Skull", "Rib"], a: 2 },
-                { q: "Which part of the atom has a positive charge?", o: ["Electron", "Neutron", "Proton", "Quark"], a: 2 },
-                { q: "What gas do plants absorb from the atmosphere?", o: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Hydrogen"], a: 2 },
-                { q: "Which continent has the most countries?", o: ["Asia", "Europe", "Africa", "South America"], a: 2 },
-                { q: "What is the speed of light?", o: ["300,000 m/s", "150,000 km/s", "300,000 km/s", "299,792 m/s"], a: 2 },
-                { q: "Which artist cut off part of his ear?", o: ["Picasso", "Van Gogh", "Da Vinci", "Monet"], a: 1 },
-                { q: "Which blood cells help in clotting?", o: ["Red", "White", "Platelets", "Plasma"], a: 2 },
-                { q: "What is the process of cell division in body cells called?", o: ["Meiosis", "Fusion", "Mitosis", "Budding"], a: 2 },
-                { q: "What was the name of the first artificial satellite?", o: ["Luna 1", "Voyager", "Sputnik", "Apollo"], a: 2 },{ q: "Which country has the city of Timbuktu?", o: ["Nigeria", "Mali", "Ghana", "Chad"], a: 1 },
-                { q: "What is the second largest planet in our solar system?", o: ["Neptune", "Earth", "Saturn", "Mars"], a: 2 },
-                { q: "Who painted the ceiling of the Sistine Chapel?", o: ["Da Vinci", "Raphael", "Michelangelo", "Donatello"], a: 2 },
-                { q: "Which gas gives Coca-Cola its fizz?", o: ["Hydrogen", "Oxygen", "Carbon Dioxide", "Nitrogen"], a: 2 },
-                { q: "Which civilization built Machu Picchu?", o: ["Aztecs", "Mayans", "Incas", "Olmecs"], a: 2 },
-                { q: "How many legs does a lobster have?", o: ["6", "8", "10", "12"], a: 2 },
-                { q: "What is the name of Earth's supercontinent in the past?", o: ["Atlantis", "Eurasia", "Gondwana", "Pangaea"], a: 3 },
-                { q: "What element does 'Fe' represent?", o: ["Fluorine", "Iron", "Francium", "Fermium"], a: 1 },
-                { q: "Which famous scientist wrote 'Principia Mathematica'?", o: ["Einstein", "Newton", "Copernicus", "Hawking"], a: 1 },
-                { q: "What is the hottest planet in our solar system?", o: ["Mercury", "Mars", "Venus", "Jupiter"], a: 2 },
-                { q: "What is the rarest blood type?", o: ["O-", "AB+", "A+", "B-"], a: 1 },
-                { q: "Who discovered penicillin?", o: ["Louis Pasteur", "Marie Curie", "Alexander Fleming", "Isaac Newton"], a: 2 },
-                { q: "Which animal can sleep while standing?", o: ["Cat", "Horse", "Elephant", "Kangaroo"], a: 1 },
-                { q: "What is the capital city of Finland?", o: ["Stockholm", "Oslo", "Copenhagen", "Helsinki"], a: 3 },
-                { q: "What causes tides on Earth?", o: ["Sun", "Wind", "Moon", "Earthquakes"], a: 2 },
-                { q: "Which U.S. state is known as the Sunshine State?", o: ["California", "Texas", "Florida", "Arizona"], a: 2 },
-                { q: "Which gas is most abundant in Earth's atmosphere?", o: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Hydrogen"], a: 2 },
-                { q: "What was the name of the ship that sank in 1912?", o: ["Britannic", "Titanic", "Olympic", "Lusitania"], a: 1 },
-                { q: "How many players are there in a rugby union team?", o: ["11", "13", "15", "17"], a: 2 },
-                { q: "What is the powerhouse of a plant cell?", o: ["Chloroplast", "Nucleus", "Mitochondria", "Cell Wall"], a: 2 },
-                { q: "What continent is the Sahara Desert located on?", o: ["Asia", "Africa", "Australia", "South America"], a: 1 },
-                { q: "How many chromosomes do humans have?", o: ["42", "44", "46", "48"], a: 2 },
-                { q: "What does CPU stand for?", o: ["Central Program Unit", "Computer Processing Unit", "Central Processing Unit", "Control Protocol Utility"], a: 2 },
-                { q: "Which organ produces insulin?", o: ["Liver", "Pancreas", "Kidney", "Stomach"], a: 1 },
-                { q: "Which sea creature has three hearts?", o: ["Shark", "Jellyfish", "Octopus", "Squid"], a: 2 },
-                { q: "Which war started in 1914?", o: ["World War II", "Vietnam War", "World War I", "Korean War"], a: 2 },
-                { q: "What is the longest river in South America?", o: ["Amazon", "Nile", "Orinoco", "Paraná"], a: 0 },
-                { q: "How many elements are there in the periodic table?", o: ["113", "118", "126", "132"], a: 1 },
-                { q: "Which planet has the most moons?", o: ["Jupiter", "Saturn", "Uranus", "Neptune"], a: 1 },
-                { q: "Who developed the theory of relativity?", o: ["Newton", "Einstein", "Tesla", "Bohr"], a: 1 },
-                { q: "What is the name for animals that carry their young in pouches?", o: ["Reptiles", "Marsupials", "Amphibians", "Rodents"], a: 1 },
-                { q: "What is the capital of Bangladesh?", o: ["Dhaka", "Chittagong", "Lahore", "Kabul"], a: 0 },
-                { q: "Which African country is known for pyramids besides Egypt?", o: ["Algeria", "Ethiopia", "Sudan", "Morocco"], a: 2 },
-                { q: "What is the freezing point of water in Fahrenheit?", o: ["32", "0", "100", "212"], a: 0 },
-                { q: "What galaxy is Earth located in?", o: ["Andromeda", "Milky Way", "Messier", "Centaurus A"], a: 1 },
-                { q: "Which vitamin helps with blood clotting?", o: ["Vitamin A", "Vitamin D", "Vitamin K", "Vitamin C"], a: 2 },
-                { q: "Which ocean is the largest?", o: ["Atlantic", "Indian", "Southern", "Pacific"], a: 3 },
-                { q: "What organ does a nephrologist specialize in?", o: ["Liver", "Kidney", "Heart", "Brain"], a: 1 },
-                { q: "How many liters are in a gallon (US)?", o: ["3.78", "4.5", "2.8", "3.5"], a: 0 },
-                { q: "What is the symbol for lead on the periodic table?", o: ["Pb", "Le", "Ld", "Pl"], a: 0 },
-                { q: "Which disease is caused by a deficiency of vitamin C?", o: ["Rickets", "Scurvy", "Pellagra", "Anemia"], a: 1 },
-                { q: "What type of bond involves sharing electrons?", o: ["Ionic", "Covalent", "Metallic", "Hydrogen"], a: 1 },
-                { q: "What is the term for a word that is the same forward and backward?", o: ["Alliteration", "Palindrome", "Homophone", "Antonym"], a: 1 },
-                { q: "How many degrees are in a right angle?", o: ["180", "90", "45", "60"], a: 1 },
-                { q: "Who was the first president of South Africa after apartheid?", o: ["Jacob Zuma", "Nelson Mandela", "Thabo Mbeki", "Cyril Ramaphosa"], a: 1 },
-                { q: "What part of the plant absorbs water?", o: ["Stem", "Leaves", "Roots", "Flower"], a: 2 },
-                { q: "Which layer of Earth do we live on?", o: ["Mantle", "Core", "Crust", "Outer Core"], a: 2 },
-                { q: "What is the plural of 'fungus'?", o: ["Funguses", "Fungi", "Fungals", "Fungae"], a: 1 }
-            ],
-            extremelyHard: [
-                { q: "What is the only number that is both a square and a cube?", o: ["0", "1", "64", "81"], a: 1 },
-                { q: "Which philosopher wrote 'Thus Spoke Zarathustra'?", o: ["Kant", "Nietzsche", "Hegel", "Sartre"], a: 1 },
-                { q: "What is the shortest war in history, in minutes?", o: ["38", "72", "114", "256"], a: 0 },
-                { q: "Which element has the highest melting point?", o: ["Carbon", "Tungsten", "Rhenium", "Osmium"], a: 1 },
-                { q: "What is the value of the Riemann zeta function at 2?", o: ["π²/6", "π/4", "e²", "1"], a: 0 },
-                { q: "Which country has the most deserts?", o: ["Australia", "Antarctica", "China", "Russia"], a: 1 },
-                { q: "Who was the first to circumnavigate the globe solo?", o: ["Magellan", "Drake", "Slocum", "Cook"], a: 2 },
-                { q: "What gas, discovered on the sun before Earth, is second most abundant in the universe?", o: ["Helium", "Neon", "Argon", "Krypton"], a: 0 },
-                { q: "What is the name of the paradox where a ship’s parts are replaced over time?", o: ["Zeno’s Paradox", "Ship of Theseus", "Liar Paradox", "Bootstrap Paradox"], a: 1 },
-                { q: "Which mathematician proved Fermat’s Last Theorem?", o: ["Euler", "Gauss", "Wiles", "Riemann"], a: 2 },
-                { q: "Which mathematician died in a duel at the age of 20?", o: ["Ramanujan", "Pascal", "Évariste Galois", "Gauss"], a: 2 },
-                { q: "What is Gödel’s first incompleteness theorem about?", o: ["Limits of computability", "Existence of God", "Unprovable truths in formal systems", "Quantum physics"], a: 2 },
-                { q: "In quantum mechanics, what principle states that position and momentum cannot be known simultaneously?", o: ["Uncertainty Principle", "Exclusion Principle", "Wave-Particle Duality", "Superposition Principle"], a: 0 },
-                { q: "Which ancient civilization invented the concept of zero?", o: ["Egyptians", "Romans", "Babylonians", "Mayans"], a: 3 },
-                { q: "Which scale measures the intensity of tornadoes?", o: ["Beaufort Scale", "Richter Scale", "Fujita Scale", "Saffir-Simpson Scale"], a: 2 },
-                { q: "What is the maximum score possible in a single frame of bowling?", o: ["30", "20", "15", "40"], a: 0 },
-                { q: "What’s the name of the deep ocean trench that is the deepest known point on Earth?", o: ["Tonga Trench", "Java Trench", "Mariana Trench", "Puerto Rico Trench"], a: 2 },
-                { q: "Which spacecraft was the first to land on the far side of the moon?", o: ["Luna 2", "Apollo 11", "Chang'e 4", "Voyager 1"], a: 2 },
-                { q: "What’s the rarest blood type?", o: ["O-", "AB+", "B-", "Rh-null"], a: 3 },
-                { q: "Which language has the most phonemes (distinct sounds)?", o: ["English", "Khoisan", "Mandarin", "Hindi"], a: 1 },
-                { q: "What’s the scientific term for the fear of long words?", o: ["Sesquipedalophobia", "Hippopotomonstrosesquipedaliophobia", "Glossophobia", "Verbophobia"], a: 1 },
-                { q: "Which particle carries the strong nuclear force?", o: ["Photon", "Gluon", "Graviton", "Neutrino"], a: 1 },
-                { q: "Which Nobel Prize category was added last?", o: ["Peace", "Economics", "Medicine", "Literature"], a: 1 },
-                { q: "Which chess grandmaster is famous for the 'Immortal Game'?", o: ["Kasparov", "Fischer", "Morphy", "Anderssen"], a: 3 },
-                { q: "Which planet rotates on its side?", o: ["Jupiter", "Neptune", "Uranus", "Saturn"], a: 2 },
-                { q: "What’s the term for a word or phrase that reads the same forwards and backwards?", o: ["Palindrome", "Anagram", "Homophone", "Oxymoron"], a: 0 },
-                { q: "What is the name of the black hole at the center of the Milky Way?", o: ["Sagittarius A*", "Andromeda", "Cygnus X-1", "Betelgeuse"], a: 0 },
-                { q: "Which ancient library was burned, destroying countless manuscripts?", o: ["Library of Athens", "Library of Rome", "Library of Alexandria", "Library of Carthage"], a: 2 },
-                { q: "In what unit is electrical resistance measured?", o: ["Volts", "Watts", "Ohms", "Amperes"], a: 2 },
-                { q: "What is the term for animals active during twilight?", o: ["Nocturnal", "Diurnal", "Crepuscular", "Aquatic"], a: 2 },
-                { q: "Which physicist is known for the discovery of quantum mechanics?", o: ["Niels Bohr", "Albert Einstein", "Max Planck", "Erwin Schrödinger"], a: 2 },
-                { q: "What was the first country to issue paper money?", o: ["China", "France", "England", "Spain"], a: 0 },
-                { q: "Who is credited with the invention of the first successful airplane?", o: ["Thomas Edison", "Wilbur and Orville Wright", "Charles Lindbergh", "Leonardo da Vinci"], a: 1 },
-                { q: "What is the rarest naturally occurring element on Earth?", o: ["Plutonium", "Osmium", "Astatine", "Rhodium"], a: 2 },
-                { q: "What is the largest known living organism?", o: ["Blue Whale", "Honey Mushroom", "Giant Sequoia", "Coral Reef"], a: 1 },
-                { q: "Which scientist proposed the theory of the heliocentric model?", o: ["Ptolemy", "Galileo", "Copernicus", "Kepler"], a: 2 },
-                { q: "What element has the highest melting point?", o: ["Carbon", "Tungsten", "Iron", "Platinum"], a: 1 },
-                { q: "What is the longest-running scientific journal?", o: ["Nature", "The Lancet", "Science", "Philosophical Transactions of the Royal Society"], a: 3 },
-                { q: "What chemical compound is commonly known as laughing gas?", o: ["Nitrous Oxide", "Ammonia", "Methane", "Carbon Dioxide"], a: 0 },
-                { q: "What was the first country to land a man on the moon?", o: ["USA", "Russia", "China", "India"], a: 0 },
-                { q: "Who wrote the novel 'One Hundred Years of Solitude'?", o: ["Gabriel García Márquez", "Mario Vargas Llosa", "Carlos Fuentes", "Julio Cortázar"], a: 0 },
-                { q: "What is the second-most abundant element in the Earth’s crust?", o: ["Oxygen", "Silicon", "Aluminum", "Iron"], a: 1 },
-                { q: "What was the first artificial satellite launched into space?", o: ["Sputnik 1", "Apollo 11", "Explorer 1", "Vanguard 1"], a: 0 },
-                { q: "Who discovered the circulation of blood in the human body?", o: ["William Harvey", "Andreas Vesalius", "Hippocrates", "Aristotle"], a: 0 },
-                { q: "What is the most expensive substance by mass?", o: ["Plutonium", "Antimatter", "Gold", "Rhodium"], a: 1 },
-                { q: "Which country was the first to grant women the right to vote?", o: ["New Zealand", "Finland", "USA", "Canada"], a: 0 },
-                { q: "What is the most abundant element in the universe?", o: ["Oxygen", "Hydrogen", "Carbon", "Helium"], a: 1 },
-                { q: "Which ancient civilization developed the first writing system?", o: ["Sumerians", "Egyptians", "Mayans", "Indus Valley"], a: 0 },
-                { q: "Who developed the first successful polio vaccine?", o: ["Albert Sabin", "Jonas Salk", "Louis Pasteur", "Edward Jenner"], a: 1 },
-                { q: "What is the speed of light in a vacuum?", o: ["3 x 10^8 m/s", "1.86 x 10^8 m/s", "3.0 x 10^7 m/s", "2.99 x 10^8 m/s"], a: 0 },
-                { q: "Who formulated the laws of motion and universal gravitation?", o: ["Albert Einstein", "Isaac Newton", "Galileo Galilei", "Johannes Kepler"], a: 1 },
-                { q: "In which city is the famous Lascaux cave painting located?", o: ["Paris", "New York", "London", "Montignac"], a: 3 },
-                { q: "Who is credited with inventing the first successful electric light bulb?", o: ["Nikola Tesla", "Thomas Edison", "Alexander Graham Bell", "Benjamin Franklin"], a: 1 },
-                { q: "What is the largest desert in the world?", o: ["Sahara Desert", "Arabian Desert", "Karakum Desert", "Antarctic Desert"], a: 3 },
-                { q: "Who was the first woman to win a Nobel Prize?", o: ["Marie Curie", "Rosalind Franklin", "Dorothy Hodgkin", "Lise Meitner"], a: 0 },
-                { q: "What is the primary gas found in the Earth's atmosphere?", o: ["Carbon Dioxide", "Oxygen", "Nitrogen", "Argon"], a: 2 },
-                { q: "What is the largest known volcano in the solar system?", o: ["Mount Olympus", "Mount St. Helens", "Mauna Kea", "Mount Fuji"], a: 0 },
-                { q: "Which famous scientist is known for his contributions to the theory of electromagnetism?", o: ["Albert Einstein", "Nikola Tesla", "James Clerk Maxwell", "Michael Faraday"], a: 2 },
-                { q: "What is the longest human-made structure in the world?", o: ["Great Wall of China", "The Burj Khalifa", "The Eiffel Tower", "The Golden Gate Bridge"], a: 0 },
-                { q: "What was the first country to implement universal healthcare?", o: ["USA", "Germany", "Canada", "United Kingdom"], a: 1 },
-                { q: "What element does 'Hg' represent?", o: ["Mercury", "Manganese", "Magnesium", "Helium"], a: 0 },
-                { q: "What is the largest moon of Saturn?", o: ["Titan", "Enceladus", "Iapetus", "Mimas"], a: 0 },
-                { q: "Which city was the host of the 2016 Summer Olympics?", o: ["London", "Beijing", "Athens", "Rio de Janeiro"], a: 3 },
-                { q: "What is the rarest naturally occurring element on Earth?", o: ["Plutonium", "Osmium", "Astatine", "Rhodium"], a: 2 },
-                { q: "What is the strongest muscle in the human body by weight?", o: ["Masseter", "Heart", "Gluteus maximus", "Soleus"], a: 0 },
-                { q: "Which famous scientist developed the uncertainty principle?", o: ["Heisenberg", "Schrödinger", "Bohr", "Einstein"], a: 0 },
-                { q: "What was the first element to be synthesized by humans?", o: ["Plutonium", "Uranium", "Neptunium", "Technetium"], a: 3 },
-                { q: "What is the term for the bending of light around an object?", o: ["Diffraction", "Refraction", "Reflection", "Gravitational lensing"], a: 3 },
-                { q: "What famous scientist discovered that light is made up of particles?", o: ["Isaac Newton", "Albert Einstein", "Louis de Broglie", "Max Planck"], a: 1 },
-                { q: "What is the name of the deepest part of the world's oceans?", o: ["Challenger Deep", "Mariana Trench", "Java Trench", "Tonga Trench"], a: 0 },
-                { q: "What is the hottest planet in our solar system?", o: ["Mercury", "Venus", "Mars", "Jupiter"], a: 1 },
-                { q: "Who is the only person to have won Nobel Prizes in two different sciences?", o: ["Marie Curie", "Albert Einstein", "Niels Bohr", "Linus Pauling"], a: 0 },
-                { q: "What is the chemical formula for methane?", o: ["CH4", "C2H6", "C3H8", "CH3OH"], a: 0 },
-                { q: "What is the lightest element in the periodic table?", o: ["Hydrogen", "Helium", "Lithium", "Beryllium"], a: 0 },
-                { q: "Which country was the first to discover Antarctica?", o: ["Norway", "USA", "Argentina", "New Zealand"], a: 0 },
-                { q: "Who was the first woman to travel into space?", o: ["Valentina Tereshkova", "Sally Ride", "Mae Jemison", "Yuri Gagarin"], a: 0 },
-                { q: "Which natural disaster is measured using the Richter scale?", o: ["Hurricane", "Earthquake", "Flood", "Tornado"], a: 1 },
-                { q: "What type of electromagnetic radiation has the highest energy?", o: ["Gamma rays", "X-rays", "Ultraviolet", "Infrared"], a: 0 },
-                { q: "Who was the first person to receive two Nobel Prizes?", o: ["Marie Curie", "Linus Pauling", "Albert Einstein", "John Bardeen"], a: 0 },
-                { q: "What element is most commonly used in the making of semiconductors?", o: ["Silicon", "Gallium", "Germanium", "Arsenic"], a: 0 },
-                { q: "Who is the founder of psychoanalysis?", o: ["Sigmund Freud", "Carl Jung", "Alfred Adler", "Erik Erikson"], a: 0 },
-                { q: "What is the smallest planet in our solar system?", o: ["Mercury", "Mars", "Venus", "Earth"], a: 0 },
-                { q: "Which scientist is credited with discovering the electron?", o: ["Niels Bohr", "J.J. Thomson", "Marie Curie", "Ernest Rutherford"], a: 1 },
-                { q: "What is the only metal that is liquid at room temperature?", o: ["Mercury", "Gallium", "Lead", "Sodium"], a: 0 },
-                { q: "What is the largest known star in terms of volume?", o: ["Betelgeuse", "UY Scuti", "Sirius A", "Antares"], a: 1 },
-                { q: "Who developed the first theory of the atomic structure?", o: ["Niels Bohr", "John Dalton", "Ernest Rutherford", "J.J. Thomson"], a: 1 },
-                { q: "What was the first artificial element to be synthesized?", o: ["Plutonium", "Neptunium", "Technetium", "Uranium"], a: 2 },
-                { q: "Which country was the first to use the atomic bomb in warfare?", o: ["USA", "Soviet Union", "Germany", "Japan"], a: 0 },
-                { q: "Which physicist is known for the uncertainty principle?", o: ["Albert Einstein", "Niels Bohr", "Werner Heisenberg", "Max Planck"], a: 2 },
-                { q: "What is the most distant galaxy known to humans?", o: ["Messier 87", "NGC 1068", "GN-z11", "Andromeda"], a: 2 },
-                { q: "What is the primary gas responsible for the greenhouse effect on Venus?", o: ["Carbon Dioxide", "Methane", "Nitrous Oxide", "Oxygen"], a: 0 },
-                { q: "What is the phenomenon of light bending as it passes through a material called?", o: ["Reflection", "Diffraction", "Refraction", "Scattering"], a: 2 },
-                { q: "Which organism is considered the oldest living organism?", o: ["Giant Sequoia", "Methuselah", "Siberian Tarpan", "Pando"], a: 3 },
-                { q: "Which ancient civilization first developed the concept of zero?", o: ["Babylonian", "Maya", "Sumerian", "Egyptian"], a: 1 },
-                { q: "What is the chemical element symbol for tungsten?", o: ["Ti", "W", "Te", "Tg"], a: 1 },
-                { q: "What is the second-largest moon of Jupiter?", o: ["Io", "Europa", "Callisto", "Ganymede"], a: 3 },
-                { q: "Which subatomic particle was discovered by Ernest Rutherford?", o: ["Electron", "Proton", "Neutron", "Photon"], a: 1 },
-                { q: "Who formulated the laws of planetary motion?", o: ["Isaac Newton", "Johannes Kepler", "Galileo Galilei", "Albert Einstein"], a: 1 },
-                { q: "What is the most common type of star in the Milky Way galaxy?", o: ["Red dwarf", "G-type main sequence", "White dwarf", "Blue giant"], a: 0 },
-                { q: "What is the oldest living animal species on Earth?", o: ["Tardigrades", "Horseshoe Crab", "Coelacanth", "Greenland Shark"], a: 3 },
-                { q: "What is the term for the process of converting light energy into chemical energy in plants?", o: ["Respiration", "Transpiration", "Photosynthesis", "Fermentation"], a: 2 },
-                { q: "Which element has the highest atomic number of naturally occurring elements?", o: ["Uranium", "Thorium", "Plutonium", "Radon"], a: 0 },
-                { q: "What is the chemical formula of sulfuric acid?", o: ["SO2", "H2SO4", "SO3", "H2S"], a: 1 },
-                { q: "What is the name of the phenomenon where light behaves both as a particle and a wave?", o: ["Wave-particle duality", "Quantum entanglement", "Heisenberg uncertainty", "Schrödinger's cat"], a: 0 },
-                { q: "Which material is known for having the highest tensile strength?", o: ["Steel", "Graphene", "Carbon Nanotubes", "Diamond"], a: 2 },
-                { q: "What element has the atomic number 118?", o: ["Oganesson", "Nihonium", "Flerovium", "Copernicium"], a: 0 },
-                { q: "Which planet in our solar system has the most moons?", o: ["Saturn", "Jupiter", "Uranus", "Neptune"], a: 1 },
-                { q: "Which element was first discovered by Marie Curie?", o: ["Polonium", "Radium", "Uranium", "Plutonium"], a: 1 },
-                { q: "What is the theory that explains the origin of the universe?", o: ["Big Bang Theory", "Theory of Evolution", "String Theory", "General Theory of Relativity"], a: 0 },
-                { q: "What is the name of the force that keeps planets in orbit around the sun?", o: ["Gravity", "Electromagnetism", "Strong Nuclear Force", "Weak Nuclear Force"], a: 0 },
-                { q: "What is the first law of thermodynamics?", o: ["Energy cannot be created or destroyed", "Entropy of an isolated system increases", "Heat always flows from hot to cold", "The pressure of a gas is directly proportional to its temperature"], a: 0 },
-                { q: "Which scientist discovered the relationship between electricity and magnetism?", o: ["Michael Faraday", "Nikola Tesla", "James Clerk Maxwell", "Alessandro Volta"], a: 0 },
-                { q: "What is the most massive known star?", o: ["UY Scuti", "VY Canis Majoris", "Sirius A", "Eta Carinae"], a: 3 },
-                { q: "What is the term for the process in which a liquid turns into a gas?", o: ["Evaporation", "Condensation", "Boiling", "Freezing"], a: 2 },
-                { q: "What is the chemical symbol for the element with the highest atomic number?", o: ["Og", "Cn", "Fl", "Ts"], a: 0 },
-                { q: "Which planet has the longest day?", o: ["Mercury", "Venus", "Earth", "Mars"], a: 1 },
-                { q: "What is the name of the longest mountain range in the world?", o: ["Himalayas", "Rockies", "Andes", "Mid-Atlantic Ridge"], a: 3 },
-                { q: "Who discovered the theory of general relativity?", o: ["Isaac Newton", "Albert Einstein", "Niels Bohr", "Galileo Galilei"], a: 1 },
-                { q: "What is the hottest part of the Sun?", o: ["Corona", "Core", "Convective zone", "Radiative zone"], a: 1 },
-                { q: "Who invented the first practical telephone?", o: ["Nikola Tesla", "Thomas Edison", "Alexander Graham Bell", "Antonio Meucci"], a: 2 },
-                { q: "What is the name of the space telescope that provided the most detailed images of distant galaxies?", o: ["Hubble", "James Webb", "Spitzer", "Chandra"], a: 0 },
-                { q: "What is the term for a substance that speeds up a chemical reaction?", o: ["Catalyst", "Solvent", "Reactant", "Enzyme"], a: 0 },
-                { q: "Who is credited with inventing the first computer?", o: ["Charles Babbage", "Alan Turing", "John von Neumann", "Konrad Zuse"], a: 0 },
-                { q: "What is the densest element?", o: ["Osmium", "Iridium", "Platinum", "Lead"], a: 0 },
-                { q: "Which part of the brain controls emotions and memory?", o: ["Cerebrum", "Cerebellum", "Hippocampus", "Medulla Oblongata"], a: 2 },
-                { q: "Which gas makes up most of the Earth's atmosphere?", o: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Argon"], a: 1 },
-                { q: "Who was the first person to discover penicillin?", o: ["Louis Pasteur", "Marie Curie", "Alexander Fleming", "Joseph Lister"], a: 2 },
-                { q: "What is the most abundant isotope of hydrogen?", o: ["Deuterium", "Tritium", "Protium", "Hydrogen-1"], a: 2 },
-                { q: "What is the name of the ancient Greek philosopher who taught Alexander the Great?", o: ["Socrates", "Plato", "Aristotle", "Pythagoras"], a: 2 },
-                { q: "What was the first spacecraft to reach interstellar space?", o: ["Voyager 1", "Parker Solar Probe", "New Horizons", "Voyager 2"], a: 0 }
-            ]
-        };
-
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -615,44 +349,112 @@
             return array;
         }
 
-        function setHeading(elementId, text) {
+        // Typewriter effect for heading
+        function setHeadingTypewriter(elementId, text, speed = 80) {
             const heading = document.getElementById(elementId);
-            heading.innerHTML = text.split('').map(char => 
-                char === ' ' ? ' ' : `<span class="letter">${char}</span>`
-            ).join('');
+            let i = 0;
+            function type() {
+                heading.innerHTML = text.slice(0, i) + '<span class="typewriter-cursor"></span>';
+                if (i < text.length) {
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    // Pause at the end, show full text for 4 seconds, then restart
+                    heading.innerHTML = text;
+                    setTimeout(() => {
+                        i = 0;
+                        type();
+                    }, 4000);
+                }
+            }
+            type();
         }
 
-        setHeading('heading', 'Trivia Titan');
+        setHeadingTypewriter('heading', 'Trivia Titan');
 
-        function startGame() {
-            username = document.getElementById('username').value.trim();
-            if (!username) return alert('Please enter a username!');
+        function showMainMenu() {
+            document.getElementById('main-menu').style.display = '';
+            document.getElementById('difficulty-menu').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'none';
+            document.getElementById('end-screen').style.display = 'none';
+            document.getElementById('heading').style.display = '';
+        }
+
+        function showPlayMenu() {
+            document.getElementById('main-menu').style.display = 'none';
+            document.getElementById('difficulty-menu').style.display = '';
+            document.getElementById('heading').style.display = '';
+        }
+
+        // ...reverted to original, no play button animation...
+
+        function showSettings() {
+            document.getElementById('settings-modal').style.display = 'flex';
+            // Set sliders to current values
+            document.getElementById('master-volume').value = Math.round(backgroundMusic.volume() * 100);
+            document.getElementById('sfx-volume').value = Math.round(correctSound.volume() * 100);
+            document.getElementById('master-volume-value').textContent = document.getElementById('master-volume').value;
+            document.getElementById('sfx-volume-value').textContent = document.getElementById('sfx-volume').value;
+        }
+
+        function closeSettings() {
+            document.getElementById('settings-modal').style.display = 'none';
+        }
+
+        function updateMasterVolume(val) {
+            backgroundMusic.volume(val / 100);
+            document.getElementById('master-volume-value').textContent = val;
+        }
+
+        function updateSfxVolume(val) {
+            correctSound.volume(val / 100);
+            gameOverSound.volume(val / 100);
+            document.getElementById('sfx-volume-value').textContent = val;
+        }
+
+        async function startGame(difficulty) {
+            currentDifficulty = difficulty;
             score = 0;
             currentQuestion = 0;
             startTime = Date.now();
-            currentQuestions = [
-                ...shuffle([...allQuestions.easy]).slice(0, 5),
-                ...shuffle([...allQuestions.hard]).slice(0, 5),
-                ...shuffle([...allQuestions.extremelyHard]).slice(0, 5)
-            ].map(q => {
-                const options = [...q.o];
-                const correctAnswer = q.o[q.a];
-                shuffle(options);
-                return { ...q, o: options, a: options.indexOf(correctAnswer) };
-            });
-            document.getElementById('start-screen').style.display = 'none';
-            document.getElementById('game-screen').style.display = 'block';
+            document.getElementById('difficulty-menu').style.display = 'none';
+            document.getElementById('game-screen').style.display = '';
+            document.getElementById('end-screen').style.display = 'none';
+            document.getElementById('heading').style.display = 'none';
+            document.getElementById('question-container').innerHTML = '<div style="font-size:1.3em;padding:40px 0;">Loading questions...</div>';
+            document.getElementById('timer').textContent = '';
             backgroundMusic.play();
-            showQuestion();
-            document.addEventListener('visibilitychange', handleTabSwitch);
+            let apiUrl = '';
+            if (difficulty === 'easy') apiUrl = 'https://opentdb.com/api.php?amount=50&category=9&difficulty=easy&type=multiple';
+            else if (difficulty === 'medium') apiUrl = 'https://opentdb.com/api.php?amount=50&category=9&difficulty=medium&type=multiple';
+            else if (difficulty === 'hard') apiUrl = 'https://opentdb.com/api.php?amount=50&category=9&difficulty=hard&type=multiple';
+            try {
+                const res = await fetch(apiUrl);
+                const data = await res.json();
+                // Only use 15 random questions from the 50
+                currentQuestions = shuffle(data.results).slice(0, 15).map(q => {
+                    const options = shuffle([q.correct_answer, ...q.incorrect_answers]);
+                    return {
+                        q: decodeHTML(q.question),
+                        o: options.map(decodeHTML),
+                        a: options.indexOf(decodeHTML(q.correct_answer))
+                    };
+                });
+                showQuestion();
+                document.addEventListener('visibilitychange', handleTabSwitch);
+            } catch (e) {
+                alert('Failed to load questions. Please try again.');
+                showMainMenu();
+            }
         }
 
         function showQuestion() {
             const q = currentQuestions[currentQuestion];
-            const timeLimit = currentQuestion < 5 ? 15 : currentQuestion < 10 ? 20 : 30;
+            const total = currentQuestions.length;
+            const timeLimit = 20;
             timeLeft = timeLimit;
             document.getElementById('question-container').innerHTML = `
-                <h3>Question ${currentQuestion + 1} of 15</h3>
+                <h3>Question ${currentQuestion + 1} of ${total}</h3>
                 <p>${q.q}</p>
                 ${q.o.map((opt, i) => `<div class="option" onclick="checkAnswer(${i})">${opt}</div>`).join('')}
             `;
@@ -684,103 +486,101 @@
             clearInterval(timer);
             document.removeEventListener('visibilitychange', handleTabSwitch);
             document.getElementById('game-screen').style.display = 'none';
-            document.getElementById('end-screen').style.display = 'block';
+            document.getElementById('end-screen').style.display = '';
             backgroundMusic.stop();
             const result = document.getElementById('result');
-            const timeTaken = ((Date.now() - startTime) / 1000).toFixed(1);
-            updateLeaderboard(score, timeTaken);
+            const endButtons = document.getElementById('end-buttons');
             if (won) {
                 result.textContent = 'You Won! 🎉';
                 result.classList.add('win-animation');
+                showConfetti();
+                endButtons.innerHTML = `<button onclick="showPlayMenu()">Try a New Difficulty</button>`;
             } else {
                 gameOverSound.play();
                 result.textContent = 'Game Over! You Lost!';
+                result.classList.remove('win-animation');
+                endButtons.innerHTML = `<button onclick="restartGame()">Restart</button><button onclick="chooseDifferentDifficulty()">Choose Different Difficulty</button>`;
             }
+        }
+        // When user clicks 'Choose Different Difficulty' after a loss, clear end screen and show only difficulty menu
+        function chooseDifferentDifficulty() {
+            document.getElementById('end-screen').style.display = 'none';
+            document.getElementById('result').textContent = '';
+            document.getElementById('end-buttons').innerHTML = '';
+            document.getElementById('difficulty-menu').style.display = '';
         }
 
         function handleTabSwitch() {
             if (document.hidden) endGame(false);
         }
 
-        function updateLeaderboard(score, time) {
-            if (!Array.isArray(leaderboard)) {
-                leaderboard = [];
-            }
-            const existing = leaderboard.find(entry => entry.username === username);
-            if (existing) {
-                if (score > (existing.score || 0)) {
-                    existing.score = score;
-                    existing.time = time;
-                }
-            } else {
-                leaderboard.push({ username, score: score || 0, time: time || 'N/A' });
-            }
-            leaderboard.sort((a, b) => (b.score || 0) - (a.score || 0) || (a.time || 0) - (b.time || 0));
-            try {
-                localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
-                console.log('Leaderboard updated:', leaderboard);
-            } catch (e) {
-                console.error('Failed to save leaderboard:', e);
-            }
-        }
-
-        function showLeaderboardScreen(page = 1) {
-            currentPage = page; // Update current page
+        async function restartGame() {
             document.getElementById('end-screen').style.display = 'none';
-            document.getElementById('leaderboard-screen').style.display = 'block';
-            leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-
-            // Calculate pagination
-            const totalUsers = leaderboard.length;
-            const totalPages = Math.ceil(totalUsers / usersPerPage);
-            const startIndex = (currentPage - 1) * usersPerPage;
-            const endIndex = startIndex + usersPerPage;
-            const paginatedUsers = leaderboard.slice(startIndex, endIndex);
-
-            // Display leaderboard for current page
-            const table = `
-                <table>
-                    <tr><th>Rank</th><th>Username</th><th>Score</th><th>Time (s)</th></tr>
-                    ${paginatedUsers.map((entry, i) => `
-                        <tr><td>${startIndex + i + 1}</td><td>${entry.username}</td><td>${entry.score || 0}</td><td>${entry.time || 'N/A'}</td></tr>
-                    `).join('')}
-                </table>
-            `;
-            document.getElementById('leaderboard').innerHTML = table;
-
-            // Display pagination controls
-            let paginationHTML = '';
-            if (totalPages > 1) {
-                for (let i = 1; i <= totalPages; i++) {
-                    paginationHTML += `
-                        <div class="page-btn ${i === currentPage ? 'active' : ''}" onclick="showLeaderboardScreen(${i})">${i}</div>
-                    `;
-                }
-            }
-            document.getElementById('pagination').innerHTML = paginationHTML;
-        }
-
-        function restartGame() {
-            document.getElementById('end-screen').style.display = 'none';
-            document.getElementById('leaderboard-screen').style.display = 'none';
-            document.getElementById('game-screen').style.display = 'block';
+            document.getElementById('game-screen').style.display = '';
+            // Remove win-animation if present
+            const result = document.getElementById('result');
+            if (result) result.classList.remove('win-animation');
             score = 0;
             currentQuestion = 0;
             startTime = Date.now();
-            currentQuestions = [
-                ...shuffle([...allQuestions.easy]).slice(0, 5),
-                ...shuffle([...allQuestions.hard]).slice(0, 5),
-                ...shuffle([...allQuestions.extremelyHard]).slice(0, 5)
-            ].map(q => {
-                const options = [...q.o];
-                const correctAnswer = q.o[q.a];
-                shuffle(options);
-                return { ...q, o: options, a: options.indexOf(correctAnswer) };
-            });
-            showQuestion();
             backgroundMusic.play();
-            document.addEventListener('visibilitychange', handleTabSwitch);
+            let apiUrl = '';
+            if (currentDifficulty === 'easy') apiUrl = 'https://opentdb.com/api.php?amount=50&category=9&difficulty=easy&type=multiple';
+            else if (currentDifficulty === 'medium') apiUrl = 'https://opentdb.com/api.php?amount=50&category=9&difficulty=medium&type=multiple';
+            else if (currentDifficulty === 'hard') apiUrl = 'https://opentdb.com/api.php?amount=50&category=9&difficulty=hard&type=multiple';
+            try {
+                const res = await fetch(apiUrl);
+                const data = await res.json();
+                // Only use 15 random questions from the 50
+                currentQuestions = shuffle(data.results).slice(0, 15).map(q => {
+                    const options = shuffle([q.correct_answer, ...q.incorrect_answers]);
+                    return {
+                        q: decodeHTML(q.question),
+                        o: options.map(decodeHTML),
+                        a: options.indexOf(decodeHTML(q.correct_answer))
+                    };
+                });
+                showQuestion();
+                document.addEventListener('visibilitychange', handleTabSwitch);
+            } catch (e) {
+                alert('Failed to load questions. Please try again.');
+                showMainMenu();
+            }
         }
+
+        // Utility to decode HTML entities from API
+        function decodeHTML(html) {
+            var txt = document.createElement('textarea');
+            txt.innerHTML = html;
+            return txt.value;
+        }
+
+        // Confetti animation for win
+        function showConfetti() {
+            // Simple confetti using emojis
+            const confetti = document.createElement('div');
+            confetti.style.position = 'fixed';
+            confetti.style.left = 0;
+            confetti.style.top = 0;
+            confetti.style.width = '100vw';
+            confetti.style.height = '100vh';
+            confetti.style.pointerEvents = 'none';
+            confetti.style.zIndex = 9999;
+            for (let i = 0; i < 80; i++) {
+                const span = document.createElement('span');
+                span.textContent = ['🎉','✨','🎊','⭐','💥'][Math.floor(Math.random()*5)];
+                span.style.position = 'absolute';
+                span.style.left = Math.random()*100 + 'vw';
+                span.style.top = Math.random()*100 + 'vh';
+                span.style.fontSize = (Math.random()*2+1)+'em';
+                confetti.appendChild(span);
+            }
+            document.body.appendChild(confetti);
+            setTimeout(()=>confetti.remove(), 2000);
+        }
+
+        // Show main menu on load
+        showMainMenu();
     </script>
 </body>
 </html>
