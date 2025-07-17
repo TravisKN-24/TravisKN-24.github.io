@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="images/logo.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trivia Titan</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
@@ -121,7 +122,7 @@
         #question-container p {
             font-size: 1.3em;
         }
-        /* Keep default font for questions and answers */
+
         #question-container, #question-container h3, #question-container p, #question-container .option {
             font-family: 'Arial', sans-serif;
         }
@@ -202,7 +203,7 @@
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
         }
-        /* Responsive Design */
+
         @media (max-width: 1024px) {
             #container {
                 max-width: 90vw;
@@ -335,7 +336,6 @@
         let currentQuestions = [];
         let currentDifficulty = '';
 
-        // Audio setup with Howler.js
         const backgroundMusic = new Howl({
             src: ['https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'],
             loop: true,
@@ -358,7 +358,6 @@
             return array;
         }
 
-        // Typewriter effect for heading
         function setHeadingTypewriter(elementId, text, speed = 80) {
             const heading = document.getElementById(elementId);
             let i = 0;
@@ -368,7 +367,7 @@
                     i++;
                     setTimeout(type, speed);
                 } else {
-                    // Pause at the end, show full text for 4 seconds, then restart
+                  
                     heading.innerHTML = text;
                     setTimeout(() => {
                         i = 0;
@@ -395,11 +394,8 @@
             document.getElementById('heading').style.display = '';
         }
 
-        // ...reverted to original, no play button animation...
-
         function showSettings() {
             document.getElementById('settings-modal').style.display = 'flex';
-            // Set sliders to current values
             document.getElementById('master-volume').value = Math.round(backgroundMusic.volume() * 100);
             document.getElementById('sfx-volume').value = Math.round(correctSound.volume() * 100);
             document.getElementById('master-volume-value').textContent = document.getElementById('master-volume').value;
@@ -440,7 +436,7 @@
             try {
                 const res = await fetch(apiUrl);
                 const data = await res.json();
-                // Only use 15 random questions from the 50
+
                 currentQuestions = shuffle(data.results).slice(0, 15).map(q => {
                     const options = shuffle([q.correct_answer, ...q.incorrect_answers]);
                     return {
@@ -511,7 +507,7 @@
                 endButtons.innerHTML = `<button onclick="restartGame()">Restart</button><button onclick="chooseDifferentDifficulty()">Choose Different Difficulty</button>`;
             }
         }
-        // When user clicks 'Choose Different Difficulty' after a loss, clear end screen and show only difficulty menu
+  
         function chooseDifferentDifficulty() {
             document.getElementById('end-screen').style.display = 'none';
             document.getElementById('result').textContent = '';
@@ -526,7 +522,6 @@
         async function restartGame() {
             document.getElementById('end-screen').style.display = 'none';
             document.getElementById('game-screen').style.display = '';
-            // Remove win-animation if present
             const result = document.getElementById('result');
             if (result) result.classList.remove('win-animation');
             score = 0;
@@ -540,7 +535,6 @@
             try {
                 const res = await fetch(apiUrl);
                 const data = await res.json();
-                // Only use 15 random questions from the 50
                 currentQuestions = shuffle(data.results).slice(0, 15).map(q => {
                     const options = shuffle([q.correct_answer, ...q.incorrect_answers]);
                     return {
@@ -557,7 +551,6 @@
             }
         }
 
-        // Utility to decode HTML entities from API
         function decodeHTML(html) {
             var txt = document.createElement('textarea');
             txt.innerHTML = html;
@@ -566,7 +559,6 @@
 
         // Confetti animation for win
         function showConfetti() {
-            // Simple confetti using emojis
             const confetti = document.createElement('div');
             confetti.style.position = 'fixed';
             confetti.style.left = 0;
@@ -588,7 +580,6 @@
             setTimeout(()=>confetti.remove(), 2000);
         }
 
-        // Show main menu on load
         showMainMenu();
     </script>
 </body>
