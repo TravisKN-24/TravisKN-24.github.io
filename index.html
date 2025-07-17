@@ -240,29 +240,38 @@
 
         @media (max-width: 480px) {
             #container {
-                padding: 6px;
+                padding: 12px;
                 border-radius: 0;
                 min-width: unset;
             }
             #heading {
-                font-size: 1.2em;
-                padding: 0 2px;
+                font-size: 2.7em;
+                padding: 0 4px;
             }
             .big-btn, .big-btn.settings-btn {
-                font-size: 0.95em;
-                padding: 8px 0;
+                font-size: 1.4em;
+                padding: 18px 0;
                 width: 100%;
             }
             #question-container {
-                padding: 4px;
-            }
-            .option {
-                font-size: 1em;
                 padding: 12px;
             }
+            .option {
+                font-size: 1.3em;
+                padding: 20px;
+            }
             #settings-modal > div {
-                min-width: 90vw !important;
-                padding: 16px 4px 12px 4px !important;
+                min-width: 98vw !important;
+                max-width: 98vw !important;
+                padding: 28px 8px 20px 8px !important;
+            }
+            #settings-modal label,
+            #settings-modal input[type="range"],
+            #settings-modal button {
+                font-size: 1.3em !important;
+            }
+            #settings-modal h2 {
+                font-size: 2em !important;
             }
         }
     </style>
