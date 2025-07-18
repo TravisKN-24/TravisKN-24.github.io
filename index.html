@@ -7,10 +7,6 @@
     <title>Trivia Titan</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
-    <!-- adsense & adsterra-->
-    <script async="async" data-cfasync="false" src="//pl27194196.profitableratecpm.com/ce3ef46922074b6f6225da548a202f34/invoke.js"></script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2977892271070694"
-    crossorigin="anonymous"></script>
     <style>
         html, body {
             height: 100%;
@@ -279,25 +275,6 @@
                 font-size: 2em !important;
             }
 
-            /* Ad container grid for mobile */
-            #container-ce3ef46922074b6f6225da548a202f34 {
-                display: grid !important;
-                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-                gap: 8px !important;
-                justify-items: center;
-                align-items: center;
-                margin: 0 auto !important;
-                width: 100% !important;
-                max-width: 100vw !important;
-                box-sizing: border-box;
-            }
-            #container-ce3ef46922074b6f6225da548a202f34 > * {
-                max-width: 130px !important;
-                min-width: 0 !important;
-                width: 100% !important;
-                height: auto !important;
-                box-sizing: border-box;
-            }
         }
     </style>
 </head>
@@ -346,8 +323,6 @@
         </div>
     </div>
 
-
-    <div id="container-ce3ef46922074b6f6225da548a202f34" style="margin-top: 40px;"></div>
     <footer>
         <p>© 2025 Travis. All Rights Reserved.</p>
     </footer>
@@ -361,6 +336,7 @@
         let startTime;
         let currentQuestions = [];
         let currentDifficulty = '';
+        let gameEnded = false;
 
         const backgroundMusic = new Howl({
             src: ['https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'],
@@ -418,6 +394,16 @@
             document.getElementById('main-menu').style.display = 'none';
             document.getElementById('difficulty-menu').style.display = '';
             document.getElementById('heading').style.display = '';
+            
+            const result = document.getElementById('result');
+            const endButtons = document.getElementById('end-buttons');
+            if (result) {
+                result.textContent = '';
+                result.classList.remove('win-animation');
+            }
+            if (endButtons) {
+                endButtons.innerHTML = '';
+            }
         }
 
         function showSettings() {
@@ -448,6 +434,7 @@
             score = 0;
             currentQuestion = 0;
             startTime = Date.now();
+            gameEnded = false;
             document.getElementById('difficulty-menu').style.display = 'none';
             document.getElementById('game-screen').style.display = '';
             document.getElementById('end-screen').style.display = 'none';
@@ -480,6 +467,7 @@
         }
 
         function showQuestion() {
+            if (gameEnded) return;
             const q = currentQuestions[currentQuestion];
             const total = currentQuestions.length;
             const timeLimit = 20;
@@ -491,13 +479,21 @@
             `;
             document.getElementById('timer').textContent = `Time left: ${timeLeft}s`;
             timer = setInterval(() => {
+                if (gameEnded) {
+                    clearInterval(timer);
+                    return;
+                }
                 timeLeft--;
                 document.getElementById('timer').textContent = `Time left: ${timeLeft}s`;
-                if (timeLeft <= 0) endGame(false);
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    endGame(false);
+                }
             }, 1000);
         }
 
         function checkAnswer(index) {
+            if (gameEnded) return;
             clearInterval(timer);
             if (index === currentQuestions[currentQuestion].a) {
                 correctSound.play();
@@ -514,6 +510,8 @@
         }
 
         function endGame(won) {
+            if (gameEnded) return;
+            gameEnded = true;
             clearInterval(timer);
             document.removeEventListener('visibilitychange', handleTabSwitch);
             document.getElementById('game-screen').style.display = 'none';
@@ -553,6 +551,7 @@
             score = 0;
             currentQuestion = 0;
             startTime = Date.now();
+            gameEnded = false;
             backgroundMusic.play();
             let apiUrl = '';
             if (currentDifficulty === 'easy') apiUrl = 'https://opentdb.com/api.php?amount=50&category=9&difficulty=easy&type=multiple';
